@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
+import {CardList} from './components/card-list/card-list.component';
 import './App.css';
 
-function App() {
+class App extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      library: [],
+      searchField: ''      
+    };
+  }
+// https://stackoverflow.com/questions/43871637/no-access-control-allow-origin-header-is-present-on-the-requested-resource-whe
+
+  componentDidMount() {
+    const proxyurl = "https://hidden-coast-89712.herokuapp.com/";
+    const url = 'https://books-example.herokuapp.com/getall';
+    fetch(proxyurl + url)
+    .then(response => response.json())
+    .then(books => this.setState({library: books.filter(e => JSON.stringify(e.name)[2] && JSON.stringify(e.name) !== 'null')})
+    )
+    .catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"));
+  }
+  
+
+ render() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+     <CardList books={this.state.library}/>
     </div>
   );
+ }
+  
 }
 
 export default App;
